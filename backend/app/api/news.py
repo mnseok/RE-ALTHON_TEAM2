@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.models import Topic
-from app.models import User
+from app.models import Topic, User, Article
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 news_blueprint = Blueprint('news', __name__, url_prefix='/news')
@@ -53,3 +52,14 @@ def register_topics():
             user.topics.append(topic)
             
     return jsonify({"msg": "Successfully registered topics"}), 200
+
+@news_blueprint.route('/articles/<int:topic_id>', methods=['GET'])
+def get_articles(topic_id):
+    articles = Article.query.filter_by(topic_id=topic_id).all()
+    return jsonify([article.serialize for article in articles])
+
+@news_blueprint.route('/articles/<int:article_id>', methods=['GET'])
+def get_article(article_id):
+    article = Article.query.filter_by(id=article_id).first()
+
+    return jsonify(article.serialize)

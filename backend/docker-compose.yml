@@ -3,26 +3,23 @@ version: "3.8"
 services:
   app:
     build: .
-    container_name: news_service_app
+    container_name: flask_app
     ports:
       - "8000:8000"
     environment:
-      FLASK_APP: app
+      FLASK_APP: run.py
       FLASK_ENV: development
-      NEWS_API_KEY: your_news_api_key
-      OPENAI_API_KEY: your_openai_api_key
-    volumes:
-      - .:/app
+      SQLALCHEMY_DATABASE_URI: "postgresql://postgres:password@db:5432/mydatabase"
     depends_on:
       - db
 
   db:
     image: postgres:14
-    container_name: news_service_db
+    container_name: flask_db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: news_service
+      POSTGRES_DB: mydatabase
     ports:
       - "5432:5432"
     volumes:

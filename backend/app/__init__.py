@@ -7,6 +7,8 @@ from app.api.auth import auth_blueprint
 from seeds import seed
 from flask.cli import with_appcontext
 import click
+from flask_cors import CORS  # Import Flask-CORS
+
 
 def create_app():
     app = Flask(__name__)
@@ -28,5 +30,6 @@ def create_app():
         seed(db)
         click.echo("Database seeded successfully.")
 
+    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
     return app

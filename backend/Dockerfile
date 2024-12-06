@@ -19,7 +19,8 @@ RUN chmod +x /app/entrypoint.sh
 
 # Set environment variables
 ENV FLASK_APP=run.py
-ENV FLASK_ENV=production
+# ENV FLASK_ENV=production
+ENV FLASK_ENV=development
 ENV PYTHONUNBUFFERED=1
 
 # Expose the port the app runs on

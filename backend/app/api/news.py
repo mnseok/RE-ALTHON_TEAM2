@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models import Topic, User, Article
 from flask_jwt_extended import jwt_required, get_jwt_identity
+import logging
 
 news_blueprint = Blueprint('news', __name__, url_prefix='/news')
 
@@ -39,7 +40,8 @@ def register_topics():
     if not user:
         return jsonify({"msg": "User not found"}), 404
     
-    data = request.json
+    data = request.get_json()
+    logging.debug(data)
     topics = data.get('topics')
     if not topics:
         return jsonify({"msg": "No topics provided"}), 400

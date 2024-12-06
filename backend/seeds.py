@@ -14,6 +14,11 @@ userData = [
 # "topic4": "의대 정원 확대",
 # "topic5": "동덕여대",
 # "topic6": "뉴진스"
+user_topic_data = [
+    {"user_id": 1, "topic_id": 1},  # User 1이 Topic 1에 관심 있음
+    {"user_id": 1, "topic_id": 2},  # User 1이 Topic 2에 관심 있음
+    {"user_id": 1, "topic_id": 3},  # User 1이 Topic 3에 관심 있음
+]
 
 topicData = [
     {
@@ -111,7 +116,7 @@ perspectiveData = [
     }
 ]
 
-from app.models import User, Topic, Article, Perspective
+from app.models import User, Topic, Article, Perspective, UserTopic
 from datetime import datetime  # datetime 모듈 추가
 
 def seed(db):
@@ -161,6 +166,21 @@ def seed(db):
                 attitude=perspective["attitude"]
             )
             db.session.add(new_perspective)
+
+    # 유저-토픽 데이터 삽입
+    user_topic_data = [
+        {"user_id": 1, "topic_id": 1},
+        {"user_id": 1, "topic_id": 2},
+        {"user_id": 1, "topic_id": 3},
+    ]
+    
+    for user_topic in user_topic_data:
+        if not UserTopic.query.filter_by(user_id=user_topic["user_id"], topic_id=user_topic["topic_id"]).first():
+            new_user_topic = UserTopic(
+                user_id=user_topic["user_id"],
+                topic_id=user_topic["topic_id"]
+            )
+            db.session.add(new_user_topic)
 
     # 변경사항 커밋
     db.session.commit()

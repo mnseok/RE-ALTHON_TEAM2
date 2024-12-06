@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { FaSearch, FaBell } from "react-icons/fa";
+import { IoIosSettings } from "react-icons/io";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -24,11 +26,44 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
       >
-        {children}
+        {/* Header */}
+        <header className="flex items-center justify-between px-16 py-4 bg-white shadow-sm">
+          {/* Left Section */}
+          <div className="flex items-center space-x-6">
+            <IoIosSettings className="w-12 h-12 text-gray-600" />
+            <div className="flex items-center space-x-4">
+              <span className="text-2xl font-semibold text-gray-900">
+                중립기어
+              </span>
+              {/* Search Bar */}
+              <div className="relative w-64">
+                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  className="w-full pl-10 pr-4 py-2 text-sm border border-none rounded-full bg-gray-100 focus:outline-none caret-gray-600 text-black"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Section */}
+          <div className="flex items-center space-x-8">
+            {/* Notification Icon */}
+            <button className="relative">
+              <FaBell className="w-6 h-6 text-gray-600" />
+            </button>
+            {/* User Profile Placeholder */}
+            <div className="w-10 h-10 rounded-full bg-gray-300" />
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="p-6">{children}</main>
       </body>
     </html>
   );

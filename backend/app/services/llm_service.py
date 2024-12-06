@@ -1,10 +1,16 @@
+import json
 import requests
 from app.config import Config
 
+<<<<<<< Updated upstream
 # from langchain.document_loaders import PyPDFLoader
 
 # from langchain.embeddings.cohere import CohereEmbeddings
 # # from langchain_google_genai import GoogleGenerativeAIEmbeddings
+=======
+from langchain.embeddings.cohere import CohereEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+>>>>>>> Stashed changes
 
 # from langchain.text_splitter import CharacterTextSplitter
 # from langchain.vectorstores.elastic_vector_search import ElasticVectorSearch
@@ -24,7 +30,10 @@ from app.config import Config
 
 # Gemini API Base URL
 BASE_URL = "https://api.gemini.com/v1"
+<<<<<<< Updated upstream
 # API_KEY
+=======
+>>>>>>> Stashed changes
 
 def summarize_article(content):
     """
@@ -55,6 +64,48 @@ def categorize_article(content):
     """
     Categorizes an article using Gemini's LLM service.
     """
+
+    with open('./RAG_data/categories.json', 'r', encoding='utf-8') as file:
+        texts = json.load(file)
+
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001") # gemini의 임베딩 모델
+    # embeddings = OpenAIEmbeddings() # openai 의 임베딩모델
+
+    vector_store = Chroma.from_documents(texts, embeddings)
+    retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+
+    system_template="""
+    Use the following pieces of context to find category of what users said.
+    If you don't know the answer, just say that "Categories not found", don't try to make up an answer.
+    ----------------
+    {summaries}
+
+    You MUST answer in Korean and in Markdown format:"""
+
+    messages = [
+        SystemMessagePromptTemplate.from_template(system_template),
+        HumanMessagePromptTemplate.from_template("{question}")
+    ]
+
+    prompt = ChatPromptTemplate.from_messages(messages)
+
+    chain_type_kwargs = {"prompt": prompt}
+
+    llm = ChatGoogleGenerativeAI(model="gemini-pro", 
+                                convert_system_message_to_human=True) # gemini pro 모델
+    # llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)  # openai의 gpt-3.5-turbo 모델
+                                
+
+    chain = RetrievalQAWithSourcesChain.from_chain_type(
+        llm=llm,
+        chain_type="stuff",
+        retriever = retriever,
+        return_source_documents=True,
+        chain_type_kwargs=chain_type_kwargs
+    )
+
+    #origin part
+
     endpoint = f"{BASE_URL}/categorize"
     headers = {
         "Authorization": f"Bearer {Config.GEMINI_API_KEY}",

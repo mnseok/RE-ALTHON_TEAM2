@@ -27,7 +27,7 @@ class Topic(db.Model):
 class Article(db.Model):
     __tablename__ = 'articles'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     topic_id = db.Column(db.Integer, db.ForeignKey('topics.id'), nullable=False)
     title = db.Column(db.String(255), nullable=True)
     content = db.Column(db.String(255), nullable=True)
@@ -52,7 +52,8 @@ class Article(db.Model):
             'created_at': self.created_at.strftime("%Y-%m-%d") if self.created_at else None,
             'views': self.views,
             'comments': self.comments,
-            'thumbnail_url': self.thumbnail_url
+            'thumbnail_url': self.thumbnail_url,
+            'original_url': self.original_url
         }
 
 

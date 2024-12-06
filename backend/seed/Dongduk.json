@@ -6,7 +6,7 @@
     "likes": 28,
     "comments": 12,
     "views": 12929,
-    "created_at": "241207",
+    "date": "241207",
     "press_name": "노컷뉴스",
     "thumbnail_url": "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1v91Cj.img?w=710&h=473&m=6",
     "original_url": "https://www.msn.com/ko-kr/news/national/%ED%95%99%EC%83%9D-%EA%B3%A0%EC%86%8C%ED%95%9C-%ED%95%99%EA%B5%90-%EB%8F%99%EB%8D%95%EC%97%AC%EB%8C%80-%EC%82%AC%ED%83%9C-%EC%95%85%ED%99%94%EC%97%90-%EA%B5%90%EC%9C%A1%EA%B3%84%EC%84%9C-%EC%86%8C%ED%86%B5%EB%A1%A0/ar-AA1v8L1P"
@@ -18,7 +18,7 @@
     "likes": 22,
     "comments": 3,
     "views": 2297,
-    "created_at": "230427",
+    "date": "230427",
     "press_name": "이미영",
     "thumbnail_url": "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1vaGMp.img?w=768&h=432&m=6",
     "original_url": "https://www.msn.com/ko-kr/news/other/%EB%8F%99%EB%8D%95%EC%97%AC%EB%8C%80-%EB%B3%B5%EA%B5%AC%EB%B9%84%EB%A7%8C-100%EC%96%B5%EC%9D%B8%EB%8D%B0%ED%95%99%EC%83%9D%EB%93%A4%EC%97%90%EA%B2%8C-%EC%B2%AD%EA%B5%AC%ED%95%98%EA%B2%A0%EB%8B%A4-y%EB%85%B9%EC%B7%A8%EB%A1%9D/ar-AA1vaBYl"
@@ -30,7 +30,7 @@
     "likes": 58,
     "comments": 12,
     "views": 1329,
-    "created_at": "241207",
+    "date": "241207",
     "press_name": "이예슬",
     "thumbnail_url": "https://img.khan.co.kr/news/2024/12/04/news-p.v1.20241120.aa3f6fcd933e40eaaf67a3fb9e4b5a21_P1.webp",
     "original_url": "https://www.khan.co.kr/article/202412040600101"
@@ -42,7 +42,7 @@
     "likes": 6,
     "comments": 1,
     "views": 4722,
-    "created_at": "241207",
+    "date": "241207",
     "press_name": "정봉비",
     "thumbnail_url": "https://flexible.img.hani.co.kr/flexible/normal/970/647/imgdb/original/2024/1202/20241202502718.jpg",
     "original_url": "https://www.hani.co.kr/arti/society/society_general/1170298.html"
@@ -54,7 +54,7 @@
     "likes": 28,
     "comments": 12,
     "views": 889,
-    "created_at": "241202",
+    "date": "241202",
     "press_name": "이은기",
     "thumbnail_url": "https://cdn.sisain.co.kr/news/photo/202411/54430_102815_3318.jpg",
     "original_url": "https://www.sisain.co.kr/news/articleView.html?idxno=54430"

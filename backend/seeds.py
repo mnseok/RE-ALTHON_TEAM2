@@ -61,12 +61,12 @@ import json
 json_directory = 'seed/'
 
 topic_map = {
-    "금융투자세": 1,
-    "기본소득": 2,
-    "의료민영화": 3,
-    "의대 정원 확대": 4,
-    "Dongduk": 5,
-    "뉴진스": 6
+    "investment_tax": 1,
+    "basicsoduk": 2,
+    "medicalPrivatization": 3,
+    "expansionMedical": 4,
+    "dongduk": 5,
+    "newjeans": 6
 }
 
 # 모든 JSON 파일의 데이터를 합치기 위한 리스트
@@ -76,21 +76,22 @@ articleDatas = []
 for filename in os.listdir(json_directory):
     if filename.endswith('.json'):  # JSON 파일만 처리
         topic_id = topic_map[filename.split('.')[0]]  # 파일명에서 topic_id 추출
+        print(f"Processing {filename.split('.')[0]}... topic_id: {topic_id}")
         filepath = os.path.join(json_directory, filename)
         with open(filepath, 'r') as file:
             data = json.load(file)  # JSON 데이터 로드
             # 각 파일의 데이터를 articleDatas에 추가
             articleDatas.extend([
                 {
-                    "id": d['id'],
                     "topic_id": topic_id,
                     "title": d['title'],
                     "content": d['content'],
                     "press_name": d['press_name'],
-                    "created_at": d['created_at'],
+                    "created_at": d['date'],
                     "views": d['views'],
                     "comments": d['comments'],
-                    "thumbnail_url": d['thumbnail_url']
+                    "thumbnail_url": d['thumbnail_url'],
+                    "original_url": d['original_url']
                 }
                 for d in data
             ])
@@ -137,19 +138,18 @@ def seed(db):
 
     # 아티클 데이터 삽입
     for article in articleDatas:
-        if not Article.query.filter_by(id=article["id"]).first():
-            new_article = Article(
-                id=article["id"],
-                topic_id=article["topic_id"],
-                title=article["title"],
-                content=article["content"],
-                press_name=article["press_name"],
-                created_at=datetime.strptime(article["created_at"], "%y%m%d"),
-                views=article["views"],
-                comments=article["comments"],
-                thumbnail_url=article["thumbnail_url"]
-            )
-            db.session.add(new_article)
+        new_article = Article(
+            topic_id=article["topic_id"],
+            title=article["title"],
+            content=article["content"],
+            press_name=article["press_name"],
+            created_at=datetime.strptime(article["created_at"], "%y%m%d"),
+            views=article["views"],
+            comments=article["comments"],
+            thumbnail_url=article["thumbnail_url"],
+            original_url=article["original_url"]
+        )
+        db.session.add(new_article)
 
     # 관점 데이터 삽입
     for perspective in perspectiveData:

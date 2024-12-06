@@ -1,4 +1,5 @@
 export interface NewsCardDto {
+  id: number;
   pressName: string;
   title: string;
   description: string;

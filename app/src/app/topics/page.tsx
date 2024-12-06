@@ -20,14 +20,66 @@ export default function Home() {
   useEffect(() => {
     const loadTopics = async () => {
       try {
-        console.log("Fetching topics...");
-        const result = await fetchAllTopics();
-        console.log("Fetched topics:", result);
-        if (result.success) {
-          setTopics(result.data);
-        } else {
-          console.error("Failed to fetch topics:", result.msg);
-        }
+        // console.log("Fetching topics...");
+        // const result = await fetchAllTopics();
+        // console.log("Fetched topics:", result);
+        // if (result.success) {
+        //   setTopics();
+        // } else {
+        //   console.error("Failed to fetch topics:", result.msg);
+        // }
+        setTopics([
+          // "금융투자세",
+          // "기본소득",
+          // "의료민영화",
+          // "의대 정원 확대",
+          // "동덕여대",
+          // "뉴진스",
+          //           +,-
+          // 금융투자세 도입 찬성,금융투자세 도입 반대
+          // 기본소득 정책에 찬성,기본소득 정책에 반대
+          // 의료민영화에 찬성,의료민영화에 반대
+          // 의대 정원 확대에 찬성,의대 정원 확대에 반대
+          // 학생측 잘못,학교측 잘못
+          // 뉴진스측 책임,"하이브, 어도어측 책임"
+
+          {
+            id: 1,
+            positive: "금융투자세 도입 찬성",
+            negative: "금융투자세 도입 반대",
+            title: "금융투자세",
+          },
+          {
+            id: 2,
+            positive: "기본소득 정책에 찬성",
+            negative: "기본소득 정책에 반대",
+            title: "기본소득",
+          },
+          {
+            id: 3,
+            positive: "의료민영화에 찬성",
+            negative: "의료민영화에 반대",
+            title: "의료민영화",
+          },
+          {
+            id: 4,
+            positive: "의대 정원 확대에 찬성",
+            negative: "의대 정원 확대에 반대",
+            title: "의대 정원 확대",
+          },
+          {
+            id: 5,
+            positive: "학생측 잘못",
+            negative: "학교측 잘못",
+            title: "동덕여대",
+          },
+          {
+            id: 6,
+            positive: "뉴진스측 책임",
+            negative: "하이브, 어도어측 책임",
+            title: "뉴진스",
+          },
+        ]);
       } catch (error) {
         console.error("Error fetching topics:", error);
       } finally {
@@ -64,11 +116,11 @@ export default function Home() {
           <button
             key={topic.id}
             className={`inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-medium ${
-              selectedTopics.includes(topic.id)
+              selectedTopics.includes(topic.title)
                 ? "bg-gray-500 text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
-            onClick={() => handleSelectTopic(topic.id)}
+            onClick={() => handleSelectTopic(topic.title)}
           >
             {topic.title}
           </button>

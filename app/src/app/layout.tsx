@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white`}
       >
         {/* Header */}
         <header className="flex items-center justify-between px-16 py-4 bg-white shadow-sm">
@@ -61,9 +61,11 @@ export default function RootLayout({
             <div className="w-10 h-10 rounded-full bg-gray-300" />
           </div>
         </header>
+        {/* border */}
+        <div className="border-b border-gray-200" />
 
         {/* Main Content */}
-        <main className="p-6">{children}</main>
+        <main>{children}</main>
       </body>
     </html>
   );

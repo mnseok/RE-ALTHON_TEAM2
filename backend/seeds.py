@@ -70,7 +70,7 @@ topic_map = {
     "basicsoduk": 2,
     "medicalPrivatization": 3,
     "expansionMedical": 4,
-    "dongduk": 5,
+    "Dongduk": 5,
     "newjeans": 6
 }
 

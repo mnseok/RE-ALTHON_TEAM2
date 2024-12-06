@@ -4,30 +4,34 @@ import { FaThumbsUp } from "react-icons/fa6";
 import { FaComment } from "react-icons/fa";
 
 interface NewsCardProps {
-  pressName: string;
+  id: number;
+  press_name: string;
   title: string;
   description: string;
-  commentCount: number;
-  likeCount: number;
+  comments: number;
+  likes: number;
+  views: number;
   createdAtString: string;
-  imageUrl: string;
-  link: string;
+  original_url: string;
+  thumbnail_url: string;
 }
 
 const NewsCard: React.FC<NewsCardProps> = ({
-  pressName,
+  id,
+  press_name,
   title,
   description,
-  commentCount,
-  likeCount,
+  comments,
+  likes,
+  views,
   createdAtString,
-  imageUrl,
-  link,
+  original_url,
+  thumbnail_url,
 }) => {
   return (
     <div className="flex flex-row w-full">
       <a
-        href={link}
+        href={`/news/${id}`}
         target="_blank"
         rel="noopener noreferrer"
         className="flex flex-row w-full h-full overflow-hidden items-center p-10"
@@ -37,7 +41,7 @@ const NewsCard: React.FC<NewsCardProps> = ({
           {/* 신문사 명 */}
           <div className="flex flex-row items-center">
             <div className="bg-gray-300 w-6 h-6 rounded-full" />
-            <p className="text-gray-600 text-xs ml-2">{pressName}</p>
+            <p className="text-gray-600 text-xs ml-2">{press_name}</p>
           </div>
 
           {/* Title & Content */}
@@ -55,11 +59,11 @@ const NewsCard: React.FC<NewsCardProps> = ({
             <p className="text-gray-600 text-sm">{createdAtString}</p>
             <div className="flex flex-row space-x-1">
               <FaThumbsUp className="text-gray-600" />
-              <p className="text-gray-600 text-sm">{likeCount}</p>
+              <p className="text-gray-600 text-sm">{likes}</p>
             </div>
             <div className="flex flex-row space-x-1">
               <FaComment className="text-gray-600" />
-              <p className="text-gray-600 text-sm">{commentCount}</p>
+              <p className="text-gray-600 text-sm">{comments}</p>
             </div>
           </div>
         </div>
@@ -67,7 +71,7 @@ const NewsCard: React.FC<NewsCardProps> = ({
         {/* 이미지 */}
         <div className="relative h-36 w-64 flex-shrink-0">
           <Image
-            src={imageUrl}
+            src={thumbnail_url}
             alt={title}
             fill
             className="object-center object-cover"

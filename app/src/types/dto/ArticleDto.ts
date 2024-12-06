@@ -6,7 +6,7 @@ export interface NewsCardDto {
   comments: number;
   likes: number;
   views: number;
-  created_at: Date;
+  createdAt: Date;
   thumbnail_url: string;
   original_url: string;
 }

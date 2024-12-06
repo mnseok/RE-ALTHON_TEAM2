@@ -1,49 +1,14 @@
 "use client";
 import NewsCard from "@/components/NewsCard";
 import TabMenu from "@/components/TabMenu";
-import { fetchTabs } from "@/lib/api";
+import { fetchNews, fetchTabs } from "@/lib/api";
 import { NewsCardDto } from "@/types/dto/NewsCardDto";
 import { useEffect, useState } from "react";
 
-const news: NewsCardDto[] = [
-  {
-    id: 1,
-    title: "Lorem ipsum dolor sit amet, consecteturqwerqwrqqwerqwr",
-    description: "The official blog for Next.js",
-    pressName: "Next.js",
-    commentCount: 10,
-    likeCount: 20,
-    createdAt: new Date(),
-    imageUrl:
-      "data:image/jpeg;base64,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",
-    link: "https://nextjs.org/blog",
-  },
-  {
-    id: 2,
-    title: "Lorem ipsum dolor sit amet, consecteturqwerqwrqqwerqwr",
-    description: "The official blog for Next.js",
-    pressName: "Next.js",
-    commentCount: 10,
-    likeCount: 20,
-    createdAt: new Date(),
-    imageUrl:
-      "data:image/jpeg;base64,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",
-    link: "https://nextjs.org/blog",
-  },
-  {
-    id: 3,
-    title: "Lorem ipsum dolor sit amet, consecteturqwerqwrqqwerqwr",
-    description:
-      "The official blog for Next.jsThe official blog for Next.jsThe official blog for Next.jsThe official blog for Next.jsThe official blog for Next.jsThe official blog for Next.jsThe official blog for Next.jsThe official blog for Next.jsThe official blog for Next.js",
-    pressName: "Next.js",
-    commentCount: 10,
-    likeCount: 20,
-    createdAt: new Date(),
-    imageUrl:
-      "data:image/jpeg;base64,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",
-    link: "https://nextjs.org/blog",
-  },
-];
+interface Tab {
+  id: number;
+  name: string;
+}
 
 export default function Home() {
   const formatDate = (dateStr: string) => {
@@ -56,12 +21,14 @@ export default function Home() {
   };
   const [tabs, setTabs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [news, setNews] = useState<NewsCardDto[]>([]);
   const [activeTab, setActiveTab] = useState(tabs[0]); // 기본값: 첫 번째 탭
+  const [newsLoading, setNewsLoading] = useState(false);
 
   useEffect(() => {
     const getTabs = async () => {
       try {
-        const fetchedTabs = await fetchTabs(); // 서버에서 탭 데이터 가져오기
+        const fetchedTabs = ["동덕여대", "의료민영화", "뉴진스"];
         setTabs(fetchedTabs);
         // 탭 데이터를 가져온 후 첫 번째 탭을 활성화
         setActiveTab(fetchedTabs[0]);
@@ -74,6 +41,235 @@ export default function Home() {
 
     getTabs();
   }, []);
+
+  // Fetch news when activeTab changes
+  useEffect(() => {
+    if (activeTab === null) return;
+
+    const getNews = async () => {
+      setNewsLoading(true);
+      try {
+        let fetchedNews: NewsCardDto[] = [];
+        if (activeTab === "동덕여대") {
+          fetchedNews = [
+            {
+              id: 1,
+              title: "학생 고소한 학교…동덕여대 사태 악화에 교육계서 '소통론'",
+              description:
+                "동덕여대가 남녀공학 전환에 반대하며 본관을 점거한 학생들을 상대로 가처분 신청과 형사 고소에 나선 가운데, 총학생회가 본관 점거 해제를 조건으로 학교 측의 사과를 비롯한 5가지 요구사항을 밝히며 사태가 장기화될 조짐을 보이고 있다. 2일 서울 성북구 동덕여자대학교 100주년기념관 일대가 남녀공학 전환에 반대하는 학생들의 '래커 시위' 등으로 어수선한 분위기를 나타내고 있다.\n\n동덕여대는 학교 측이 사과할 경우 본관 점거를 풀겠다고 한 총학생회를 향해 '어처구니없는 상황'이라며 '지금이라도 불법행위 책임을 인정하고 빨리 점거를 해제하라'고 강력히 대응했다. \n\n동덕여대는 2일 교무처장인 이민주 비상대책위원장 명의로 입장문을 내고 '이번 사태의 위법성에 대해 일말의 반성과 책임감 없는 총학생회의 태도를 안타깝게 생각한다'며 이같이 밝혔다.\n\n이 위원장은 '이번 불법행위로 인한 피해는 상상할 수 없을 정도'라며 수십억에 이르는 재산적 손해와 정신적 피해를 거론했다. 또한 '대학의 이미지와 위상이 나락으로 떨어져 취업의 길은 막막하기만 하다'며 '무엇보다 가슴 아픈 일은 이번 사태로 인해 시위에 참석하지 않은 대부분의 학생들이 가혹한 사회적 편견과 불이익을 감당해야 한다는 것'이라고 안타까워했다.\n\n그러면서 '대학은 총학생회를 비롯한 주동 학생들에게 그 책임을 엄격히 묻겠다'며 '점거가 길어질수록 책임은 무거워진다'고 강조했다.\n\n이 위원장은 수업 거부로 비롯된 결석 처리를 해결해달라는 총학 요구에도 '협박과 종용에 의해 불가피하게 수업 거부에 동참한 학생이 있다는 점은 참작하겠다'고 답했다.\n\n이 학교 총학은 전날 남녀공학 전환 논의 사과, 남녀공학 전환에 대해 차기 총학생회와 논의, 수업 거부에 대한 출결 정상화 등의 조건을 받아들이면 본관 점거를 해제하겠다고 밝혔다.\n\n그에 앞서 대학 측은 총장 명의로 총학생회장을 비롯한 학생과 성명불상자 21명을 공동재물손괴·공동건조물침입 등의 혐의로 고소했다.",
+              likes: 28,
+              comments: 12,
+              views: 12929,
+              // change string to date
+              // created_at: "241207",
+              created_at: new Date("2024-12-07"),
+              press_name: "노컷뉴스",
+              thumbnail_url:
+                "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1v91Cj.img?w=710&h=473&m=6",
+              original_url:
+                "https://www.msn.com/ko-kr/news/national/%ED%95%99%EC%83%9D-%EA%B3%A0%EC%86%8C%ED%95%9C-%ED%95%99%EA%B5%90-%EB%8F%99%EB%8D%95%EC%97%AC%EB%8C%80-%EC%82%AC%ED%83%9C-%EC%95%85%ED%99%94%EC%97%90-%EA%B5%90%EC%9C%A1%EA%B3%84%EC%84%9C-%EC%86%8C%ED%86%B5%EB%A1%A0/ar-AA1v8L1P",
+            },
+            {
+              id: 2,
+              title:
+                '동덕여대 복구비만 100억인데..."학생들에게 청구하겠다" [Y녹취록]3일 • 2분 읽음',
+              description:
+                "◇앵커> 그런데 금액 자체가 얼핏 보기만 해도 학생들이 부담하기에는 너무 많은 금액 같기도 한데요. 이건 어떻게 해야 할까요?\n\n◆김광삼> 거의 금액 자체로 보면 학생들이 부담하기에는 불가능한 상황이죠. 더군다나 학생이 무슨 돈이 있겠어요. 더군다나 학생은 성인이기 때문에 미성년자인 경우에는 특별한 경우에는 부모가 책임이 있거든요. 그런데 학생이고 성인이잖아요. 그러니까 학생들이 만약 소송에서 지게 되면 이것을 물어줄 수밖에 없는 상황인데 본인 명의로 재산이 있다거나 그럴 가능성도 별로 없을 거예요. 그러면 동덕여대 측에서 소송에서 이긴다 할지라도 패소한 학생들을 통해서 손해를 보전할 수 있는 금액은 아주 미미할 것이다, 이렇게 보거든요. 그러면 결과적으로 학교가 가입하고 있는 보험, 이런 것을 통해서 보전을 받을 수밖에 없고 또 보전을 받는다 하더라도 보전을 받으면 그 보험회사에서 학생들의 상대로 구상권을 청구해요. 그러니까 이 사건 자체가 상당히 법적으로 굉장히 어려운 상황으로 가고 있다, 이렇게 볼 수 있어요.\n\n◇앵커> 어쨌든 지금 청소하는 비용, 그리고 시설물 파괴된 부분을 또 다시 복구하는 비용, 이런 비용이 산정이 된 것 같은데 학교 측에서는 이번 일로 대학 위상도 나락으로 추락했다, 이렇게 호소를 하고 있는 그런 상황인데 일종의 이런 민사에서 명예의 실추라든지 학교의 위상이라든지 이런 부분까지도 청구할 수 있는 건가요?\n\n◆김광삼> 그건 쉽지 않아요. 일단 일반적으로 학교의 위상이 추락됐다 이런 것도 명예훼손과 관련된 것인데 명예훼손은 사람에 대한 명예 감정에 대한 훼손이기 때문에 위자료로 청구할 수 있거든요. 위자료라는 것은 사람이 청구할 수 있는 거고. 경우에 따라서는 이게 과연 학교의 신용 훼손이랄지 그런 것과 관련이 있다고 한다면 일종의 손해액을 산정해서 할 수 있는데 그 손해액 산정하기가 쉽지 않거든요. 그러면 학교의 추락, 이미지 추락 이런 것 자체는 금액으로 또 환산할 수 없는 부분이 있기 때문에 아마 전체적으로 손해 본 것에 대한, 학교 기물이 파손됐다랄지 점거하는 과정에서 재물이 손괴됐다랄지 이런 물리적 손해에 한정될 가능성이 크다, 이렇게 봅니다.",
+              likes: 22,
+              comments: 3,
+              views: 2297,
+              // created_at: "230427",
+              created_at: new Date("2023-04-27"),
+              press_name: "이미영",
+              thumbnail_url:
+                "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1vaGMp.img?w=768&h=432&m=6",
+              original_url:
+                "https://www.msn.com/ko-kr/news/other/%EB%8F%99%EB%8D%95%EC%97%AC%EB%8C%80-%EB%B3%B5%EA%B5%AC%EB%B9%84%EB%A7%8C-100%EC%96%B5%EC%9D%B8%EB%8D%B0%ED%95%99%EC%83%9D%EB%93%A4%EC%97%90%EA%B2%8C-%EC%B2%AD%EA%B5%AC%ED%95%98%EA%B2%A0%EB%8B%A4-y%EB%85%B9%EC%B7%A8%EB%A1%9D/ar-AA1vaBYl",
+            },
+            {
+              id: 3,
+              title:
+                "동덕여대 교수 5인 '학교가 학생 지켜야”···교수사회도 ‘학교 불통’에 분노",
+              description:
+                "‘남녀공학 전환’에 반대하며 학교 본관을 점거해온 동덕여자대학교 총학생회는 4일 본관 점거를 해제한다고 밝혔다. 총학생회는 사회관계망서비스(SNS)에 올린 긴급 공지를 통해 '대학 본부에서 본관 점거를 불법행위로 규정하고 있기 때문에 더 이상 점거하기 어렵다”고 알렸다.\n\n학생들이 지난 23일 동안 본관 점거하고 농성을 벌이는 동안 침묵을 지켰던 동덕여대 교수 중 일부가 마침내 입을 열었다. 이들은 학생들의 과격한 표현 방식에 아쉬움이 없지 않지만 ‘제자를 포기하는 스승’은 없어야 한다고 말했다. 학교 측이 학생들 시위로 인한 수십억원대 피해를 내세우고, 폭력 행위의 주동자를 찾겠다며 학생들을 형사고소하는 등 강경 일변도 대응만 하다가는 학교에 돌이킬 수 없는 상흔만 남을 것이라고 입을 모았다.\n\n동덕여대 교수들은 지난 3일 기자와 통화하면서 '많은 교수들이 공개적으로 말하지 못할 뿐, 학생을 압박하고 외부 공격에 내모는 학교에 대해 분노하고 있다”고 말했다. 이들은 '학생들부터 보호해야 한다”고 말하면서 비민주적·강압적인 학교의 태도가 학생들뿐 아니라 교수들에게도 상처를 남겼다고 했다. 공학 전환에 대한 학생 측의 거센 반발의 뿌리는 학교 측의 불통에 기인한 것이라고도 했다.\n\n'학교가 교수들에 징계 압박하며 학생들에게 ‘F학점’ 주라 하는 상황”\n\n동덕여대 측은 '공학 전환은 확정된 게 아니며 추후 의견을 수렴할 예정이었다”는 입장을 냈다. 논의가 설익은 단계에서 학생들이 보인 반응이 성급하고 거칠다는 취지를 담았다.\n\n그러나 인터뷰에 응한 동덕여대 교수들은 '애초에 학교는 학생들의 의견을 받아들일 생각이 없었을 것”이라며 '학교의 책임이 크다”고 밝혔다. A교수는 '의견 수렴 예정이었다는 학교 측의 말은 학생들뿐만 아니라 교수들도 믿지 않는다”며 '학과 통폐합 때도 당사자인 학생들에게 납득할만한 설명이 없었고, 계속 학생들은 무시당해왔다고 느낄 상황이 이어졌다”고 말했다. B교수는 '학생들의 분노가 정당하다”며 '학교가 형식적인 의견 수렴을 하거나, 학생 의사를 반영하지 않은 적도 많아서 공학 전환 역시 학교가 일방적으로 밀어붙이리라 생각할 수밖에 없었을 것”이라고 했다.\n\n교원 임용 등 목줄을 쥔 학교 측이 교수들에게도 일방의 입장을 강요한다는 지적도 나왔다. C교수는 '학생들의 ‘수업거부 시위’를 존중해 휴강하려는 교수들을 학교가 압박하고 있다”며 '학사 일정을 조정하고 학생들과 협의하길 바라는 교수들도 많지만 학교가 징계를 들이밀며 ‘학생들에게 F를 주라’고 하는 상황”이라고 했다.\n\n학교 측이 공개한 ‘교수 호소문’를 두고도 비슷한 비판이 이어졌다. 지난달 20일 동덕여대 측은 학내 교수 256명이 '학생들의 불법 행위는 정당화될 수 없다”는 내용의 호소문에 이름을 올렸다고 밝혔다. B교수는 '많은 교수가 호소문에 분노해 서명을 거부했으나 이런 사실은 알려지지 않아 교수가 학교 편에 선 것처럼 호도되고 있다”고 밝혔다. C교수는 '학과 차원에서 서명을 하자고 하면 따를 수밖에 없는 입장도 있다”며 '이름을 올린 이들도 100% 학교 입장에 동의하는 건 아니다”라고 했다.\n\n'학교가 생각하는 ‘대학 발전’이란 무엇인지 되묻고 싶다”\n\n‘공학 전환’을 두고도 교수 사회 내에서 이견이 분분하다고 했다. A교수는 '여대의 공학 전환은 나라로 따지면 ‘헌법을 바꾸자’는 수준의 논의이기 때문에 학생들이 민감한 게 당연하다”며 '일부 단과대에 남성이 필요하다는 이유로 공학 전환을 논의했다는 것을 학생들이 어떻게 받아들이겠나”라고 말했다.\n\n‘여대의 존재 이유’에 대한 학교 측의 고민이 없다고 지적하기도 했다. D교수는 '여대는 여성 고등교육률이 높아졌다고 해서 역할이 끝나는 것이 아니라 우리 사회에 교묘하게 뿌리내린 차별에 대해 논의하는 장의 역할을 한다”며 '학교 측은 ‘대학 발전’을 위해 공학 전환을 논의했다고 하는데 과연 학교 측이 생각하는 대학 발전이란 무엇인지 묻고 싶다”고 말했다.\n\nE교수는 '외부에서는 ‘학령인구가 감소하고 있으니 어쩔 수 없지 않냐’고 하지만 학생들에게는 그렇게 단순한 문제가 아니다”라며 '여대 구성원으로서 정체성을 길러왔기 때문에 학생들에게는 학교의 공학 전환 논의가 자아 개념에도 손상을 줄 만한 사안이었을 것”이라 말했다.\n\n시급한 학생 보호…'교육자로서 부끄럽고 참담해”\n\n교수들은 학생들을 향해 쏟아지는 외부의 비난과 공격을 방치하는 학교의 태도가 문제라고도 했다. 동덕여대는 앞서 신남성연대 집회에 대해 ‘법적 조치를 포함해 학생 안전을 보장할 방안을 마련해달라’는 학생들의 요구를 받아들이지 않았다. ‘동덕여대 학생을 거르고 싶다’ 등의 문제 발언이나 혐오 표현이 이어지는데도 학교 측은 '(이번 시위로 인해) 대학의 이미지와 위상이 나락으로 떨어져 취업의 길이 막막하다”며 외부의 비난에 동조하는 입장을 냈다.\n\n교수들은 이 같은 학교의 대응에 대해 '교육자로서 부끄럽고 참담하다”고 말했다. D교수는 '대학은 질문하고 저항하며 진리를 탐구하는 공간”이라며 '학생들이 스스로 의견을 내고 저항하는 것에 대해 어떻게 학교가 ‘위상을 떨어뜨리는 일’이라고 말할 수 있나”라고 비판했다. E교수는 '학교가 학생들을 야단치듯 대하고 있는데 이는 학교가 소통의 의지가 없다는 것을 스스로 증명한 꼴”이라고 했다.\n\n교수들은 '무엇보다 학교는 학생들과 대화하고 그들을 보호해야 한다”고 밝혔다. A교수는 '신남성연대 같은 단체들이 학생들에게 위해를 가할까봐 걱정된다”며 '대학은 학생들 덕에 존재하는 만큼 학생 보호가 우선시 돼야 하는데 학교는 전혀 그럴 생각이 없어 보인다”고 했다. C교수는 '그간 총학생회 입장을 보면 학생들은 학교에 대화를 시도하지만 학교는 전혀 소통의 의지가 없고 처,",
+              likes: 58,
+              comments: 12,
+              views: 1329,
+              // created_at: "241207",
+              created_at: new Date("2024-12-07"),
+              press_name: "이예슬",
+              thumbnail_url:
+                "https://img.khan.co.kr/news/2024/12/04/news-p.v1.20241120.aa3f6fcd933e40eaaf67a3fb9e4b5a21_P1.webp",
+              original_url: "https://www.khan.co.kr/article/202412040600101",
+            },
+            {
+              id: 4,
+              title: "동덕여대 교수·직원 비대위 “총학, 본관 점거 풀어라”",
+              description:
+                "동덕여자대학교 교수·직원으로 구성된 비상대책위원회가 “총학생회는 지금이라도 불법행위의 잘못과 책임을 인정하고 빨리 (본관) 점거를 해제”하라고 촉구했다.\n\n동덕여대 비대위는 2일 입장문을 내어 “치밀한 계획에 의한 불법 점거, 도가 넘는 위법행위 등에 대한 증거는 차고 넘친다”며 “대학은 불법행위의 참여 정도를 엄격히 구분할 것”이라고 밝혔다. “이번 사태의 위법성에 대해 일말의 반성과 책임감 없는 총학생회의 태도에 대해 안타깝게 생각한다”며 엄중하게 대응하겠다는 점을 강조했다.\n\n이들은 이번 사태로 인해 “수십억에 이르는 재산적 손해는 물론 많은 구성원들이 겪고 있는 정신적 피해를 겪고 있다”고 주장하며 “총학생회를 비롯한 주동 학생들에게 그 책임을 엄격하게 물을 것”이라고 밝혔다. 이어 “아직도 불법행동에 참여하고 있는 학생들은 지금이라도 본인이 져야 할 책임에 대해 이성적으로 판단하기 바란다”고 했다. 또 “본관 점거로 인한 학사행정 업무 차질 역시 수업방해의 일환”이라며 ”더 이상의 수업방해는 용납할 수 없다”고 강조했다.\n\n동덕여대 총학생회는 공학전환 논의에 대한 비민주적 진행방식에 대해 학교 쪽의 사과를 요구하며 본관 점거를 이어가고 있지만 비대위는 “반대의사를 폭력으로 행사한 당사자가 오히려 대학에게 사과를 요구하는 어처구니없는 상황”이라고 반박했다. 비대위는 “대학 전환을 위한 논의는 누구나 자유롭게 할 수 있다”며 “무엇을 사과하라는 것인지 이해할 수 없다”고 했다. 비대위는 ”대학은 학생뿐 아니라 교수, 직원, 동문들도 포함돼있다. 이들은 모두 권리와 책임을 가지고 있는 학교의 구성원”이라며 “일부 학생이 반대하니까 무조건 논의를 철회하라는 주장은 억지이자 독선”이라고 덧붙였다.\n\n동덕여대 총학생회는 지난달 30일 ‘대학 본부를 향한 총학생회 요구안’을 공개하며 “대학본부가 민주적인 의사결정을 실현할 경우 본관점거 해제에 대해 재고할 의사가 있다”고 밝힌 바 있다. 총학생회는 △공학전환 논의에 대한 비민주적 진행방식에 대한 사과 및 밀실논의 금지 △2025년 공학전환 안건에 대해 차기 총학과 논의 △학생 의견 수렴 구조체 구성 △학생들의 자발적 수업거부로 이뤄진 출결 정상화 처리 △한국어문화전공 외국인 재학생의 학위 취득 과정 명확화를 요구하고 있다.",
+              likes: 6,
+              comments: 1,
+              views: 4722,
+              // created_at: "241207",
+              created_at: new Date("2024-12-07"),
+              press_name: "정봉비",
+              thumbnail_url:
+                "https://flexible.img.hani.co.kr/flexible/normal/970/647/imgdb/original/2024/1202/20241202502718.jpg",
+              original_url:
+                "https://www.hani.co.kr/arti/society/society_general/1170298.html",
+            },
+            {
+              id: 5,
+              title: "동덕여대 학생들은 왜 그리 화가 났을까",
+              description:
+                "‘남녀공학 전환’을 두고 동덕여대 학생들의 총투쟁이 벌어졌다. 대학 본부는 14일 만에 ‘잠정 중단’에 합의했지만 “논의가 재개될 가능성을 완전히 닫은 게 아니다”라고 말했다.\n\n‘우리 학교가 남녀공학으로 바뀐다고?’ 11월7일 동덕여대 학생들 사이에 일순 혼란이 번졌다. 동덕여대는 광주·덕성·동덕·서울·성신·숙명·이화여대 등 전국에 7개 남은 4년제 여자대학 중 하나다. 11월5일 동덕여대 대학비전혁신추진단은 ‘남녀공학 전환’이 포함된 2개 단과대(공연예술대학, 디자인대학)의 발전 방안에 대해 논의했다. 회의 결과는 11월12일 교무위원회에 보고되고 추진사항과 의견수렴 절차 등을 정하기로 했다.\n\n‘경쟁력 강화’를 목표로 출발한 회의였으나, 학생들은 ‘밀실 회의’와 ‘비민주적 공학 전환’이라며 강하게 반발했다. 총학생회는 11월7일 입장문을 발표해 “대학 본부는 빠른 시일 내 총학생회와 면담해 입장을 표명하라”며 공학 전환에 전적으로 반대한다고 밝혔다.\n\n11월11일 본부와의 면담이 취소되자 학생들은 본관을 비롯해 건물을 점거하며 수업 거부에 들어갔다. 중앙 래디컬 페미니즘 동아리와 각 단과대 학생회가 연합해 ‘총력대응위원회(총대위)’를 꾸렸으며, 공학 전환 완전 철회, 총장직선제 도입 등 3가지 요구사항을 내세웠다.\n\n대학 본부는 학생 행동에 비판을 쏟아냈다. 김명애 총장과 교수, 직원 등 학내 구성원들이 입장문을 내며 ‘폭력 사태’와 ‘불법행위’를 중단하라고 요구했다. 본부는 학생들로 인한 피해 금액을 24억~54억 원으로 추산하며 보상을 청구했다. 학생들은 이에 대해 ‘오죽하면 이랬겠냐’며 대학 본부에 대한 불신이 쌓여 행동에 나선 것이라고 반박했다. 학생들은 그동안 학교가 학생들의 목소리를 듣지 않았다고 주장했으나, 대학 측은 “학생 요구에 후속 조치를 취해왔다”고 맞섰다.",
+              likes: 28,
+              comments: 12,
+              views: 889,
+              // created_at: "241202",
+              created_at: new Date("2024-12-02"),
+              press_name: "이은기",
+              thumbnail_url:
+                "https://cdn.sisain.co.kr/news/photo/202411/54430_102815_3318.jpg",
+              original_url:
+                "https://www.sisain.co.kr/news/articleView.html?idxno=54430",
+            },
+          ];
+        }
+        if (activeTab == "의료민영화") {
+          fetchedNews = [
+            {
+              id: 6,
+              title: "우리가 영리병원을 반대하는 이유",
+              description:
+                "혼자 지낼 때 아프면 참 서럽다. 고향을 떠나 서울에서 긴 시간 자취생활을 한 나는 몸이 아파서 느끼는 설움을 비교적 잘 안다. 이보다 더욱 슬픈 건 돈이 없거나 치료비가 너무 비싸서 고통을 감내하면서 의료서비스를 받지 못하는 경우다. 돈 없어서 병원 못 가는 슬픔을 국가가 조금이나마 덜어주기 위해 만든 제도가 국민건강보험이나 보건소, 국공립병원 등 공공의료서비스다. 이런 공공보건·의료제도와 서비스는 적용받고 있을 때는 그 소중함을 모르지만, '빼앗길' 때 존재감을 확실히 실감한다. 그래서 우리는 영리병원, 의료민영화와 같이 의료서비스의 질적 변화가 예상되는 것들에 본능적으로 반응한다.\n\n여론조사업체 리얼미터가 '제주도 영리병원 허가에 대한 국민여론'을 조사한 결과, '향후 내국인 진료로 확대될 것이고, 의료 공공성 훼손으로 국내 공공의료체계를 허물 수 있으므로 반대한다'는 질문에 51.3%가 동의했다. '외국인 진료에 한정하므로 국내 의료체계에 영향을 주지 않고, 의료관광을 활성화할 수 있으므로 찬성한다'는 질문에는 35.8%가 동의했다. 리얼미터는 \"한국당 지지층에서만 찬성 여론이 우세했고 모든 지역과 이념성향, 50대 이하 전 연령층, 한국당 제외 모든 정당 지지층에서 반대가 대다수이거나 우세한 것으로 나타났다\"고 전했다.\n\n이렇게 우리 국민은 영리병원에 대해 반대하고 있다. 반대하는 이유는 의료서비스에 대해 각자가 가진 경험치와 의료 공공성에 대한 견해에 따라 다르겠지만, 몸이 아플 때 받는 병원 치료에 대해 보편적 복지, 형평성의 관점에서 접근하는 경우가 많을 것이다. 물론, 모든 사람이 동일한 수준의 서비스를 받을 수 없지만, 의료영역에서까지 빈부격차가 더 심화되는, 그래서 돈과 생명을 등치 시키는 방향은 원치 않는다.\n\n지금까지 여론의 뭇매로 인해 숨죽이고 있었던 영리병원 이슈가 다시 고개를 내밀고 있다. 영리병원에 반대하는 시민사회뿐만이 아니라 찬성 입장을 가진 대기업과 보수 언론도 적극적으로 가담하고 있다. 한국 사회에서 영리병원이 괜찮은 것일까? 최근 허가된 제주도 녹지국제병원이 일으킨 영리병원 논란을 보면서 우려하는 이유는 다음과 같다.\n\n영리병원, 이런 이유로 반대한다.첫째, 영리병원의 특성이다. 현행법상 의료인·비영리법인·정부·지방자치단체만이 병원 설립이 가능하다. 개인병원을 제외한 비영리병원은 병원에서 올린 수익을 외부로 유출할 수 없고, 수익은 전부 의료를 위한 목적으로 사용해야 한다. 이와 달리 영리병원은 주식회사처럼 외부의 투자를 받을 수 있고, 투자자들에게 수익도 분배한다. 설립 목적이 이윤 창출에 있다. 이로 인해 의료비 인상은 당연히 예상할 수 있다. 불필요한 진료를 추가하고, 의료 인력을 감축하여 이윤을 확대하는 전략도 우려스럽다. 의료행위 경험이 전무한 중국 부동산 회사인 녹지그룹이 제주 녹지국제병원을 설립했다는 것은 다시 짚어야 할 지점이다.\n\n둘째, 국민건강보험 체계의 약화다. 영리병원은 국민건강보험 적용이 의무가 아니다. 한국의 모든 의료기관에서 행해지는 진료행위는 '건강보험 당연지정제'에 따라 건강보험의 적용대상이나 영리병원은 예외다. 현재 한국은 건강보험제도로 인해 의료비를 적절하게 통제할 수 있지만, 영리병원은 민간보험과 계약을 맺고, 진료비 수준을 책정한다. 이런 상황이 전개되고, 확대되면 민간보험이 진출하는 영역이 커지면서 건강보험을 위협할 수 있다. 사회적 연대에 기초한 건강보험에 틈이 생기고, 민간보험이 이를 대체하는 상황은 의료 공공성의 심각한 위기를 초래할 것이다.\n\n셋째, 영리병원의 확산이다. 제주도에 영리병원 하나 설립한다고 무슨 큰일이 나겠냐고 반대 목소리에 비난을 가하는 집단이 있다. 내국인 진료는 불가능하니 걱정할 일 아니라고 말하기도 한다. 당분간 그럴 수도 있다. 박능후 보건복지부 장관이 18일 한 라디오 방송에 출연해 \"국회에서 여러 번 밝혔다. 이 정부에서는 절대 영리병원 추가 허가는 없다.\"고 언급했으니 말이다. 그러나 작은 틈에서 시작돼서 댐은 무너지고, 작은 불씨가 건물을 삼킨다. 한번 풀린 영리병원의 빗장은 우리를 의료서비스의 양극화, 의료민영화의 길로 인도할 것이다. 정권은 임기가 있지만, 새로운 시장을 찾는 자본의 힘은 더욱 꼼꼼하고, 영속적이다.\n\n넷째, 의사결정과정의 문제다. 2015년 3월 녹지그룹은 녹지국제병원 건립 사업계획서를 제주도에 제출한다. 이 사업계획은 보건복지부 승인을 거치면서 2017년 7월 병원 건물 준공과 의료 인력 채용에 이른다. 이 과정에서 해당 병원이 내국인을 제외한 '외국인 전용 병원'인지가 제주도청과 녹지그룹 간의 쟁점으로 떠오르고, 제주도청의 병원 개설 허가 문제에 여론의 관심이 쏠리게 된다. 결국, 숙의형 공론조사위원회가 구성되어 논의 끝에 6대 4로 '개설 불허 권고'를 결정했으나 원희룡 지사는 이를 뒤집고, 지난 5일 녹지국제병원 외국인 전용 조건부 개설 허가 발표를 했다. 이후 녹지국제병원은 내국인 진료 제한 조건을 받아들일 수 없다면서 법적 대응을 검토한다고 밝혔다. 당초, 녹지그룹이 어떤 목적으로 제주도에 병원 건립 계획을 세웠는지 알 수 있는 대목이다.\n\n영리병원 도입 문제는 기업 자본이 새로운 수익 창출 모델을 찾으면서 촉발됐다. 김대중 정부부터 서비스 산업을 미래 먹거리로 주목하면서 지금까지 의료산업화 기조는 확대됐다. 한국경영자총협회가 올해 6월 건의한 '혁신성장 규제 개혁 과제' 9개 중 첫 번째가 '영리병원 설립'이었다. 오랫동안 대기업은 영리병원을 통해 새로운 수익 확대의 통로를 마련하기를 원하고 있다.\n\n이렇게 영리병원이 자본의 '신세계'가 되도록 둘 수 없는 또 따른 이유는 한국의 낮은 공공의료 수준 때문이다. 우리나라는 공공의료기관이 병상 수 기준 12%밖에 안 된다. 영국과 캐나다는 99%에 이르고, 독일 41%, 프랑스 62% 수준이다. 의료 부문에서 후진적이라고 하는 미국도 24%다. 이런 현실을 외면한 채 영리병원 운영이 시작된다면 그나마 괜찮은 건강보험으로 다져진 공공의료 체계가 흔들리게 될 것이다. 이번 제주 영리병원 설립 논란을 한국 의료시스템의 맹점을 되짚고, 의료 공공성을 강화하는 계기로 삼아야 한다.\n* 리얼미터 여론조사는 12월 12일 tbs 의뢰로 전국 19세 이상 성인 504명을 대상으로 했음. 표본오차 95% 신뢰수준 ±4.4%p·응답율 6.9%. 이외 사항은 중앙선거여론조사심의위원회 홈페이지 참조.",
+              likes: 26,
+              comments: 11,
+              views: 33,
+              // create_at: "181220",
+              created_at: new Date("2021-12-20"),
+              press_name: "최영조",
+              thumbnail_url:
+                "https://ojsfile.ohmynews.com/STD_IMG_FILE/2018/1220/IE002435334_STD.jpg",
+              original_url:
+                "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0002497408",
+            },
+            {
+              id: 7,
+              title: "의료민영화 반대 파업, 의료민영화 ‘찬성-반대’ 의견 보니",
+              description:
+                '의료법 시행규칙 개정안의 입법예고 마지막 날인 22일 의료민영화 반대 파업에 돌입, 의료민영화 반대 서명 운동이 SNS를 통해 빠르게 확산되고 있다.\n\n이에 앞서 민주노총 보건의료노조는 21일 오전 청와대 앞에서 기자회견을 열고 전국 보건의료노조 소속 조합원들이 지난달 27일 1차 파업에 이어 22일부터 닷새간 의료민영화 반대 파업에 들어간다고 밝혔다.\n\n의료법 시행규칙 개정안은 지난달 10일 보건복지부가 발표했으며 22일까지 입법예고된 뒤 규제 심사와 법제처 심사를 거쳐 8월부터 시행될 예정이다.\n\n박근혜 정부가 투자 활성화 대책의 일환으로 추진하고 있는 의료서비스 규제 완화 정책이 ‘의료민영화’ 논란으로 번지면서 논란이 사그라들지 않고 있다.\n\n국내 여론은 의료 법인의 영리 자회사 설립과 원격진료 등이 의료산업 활성화와 일자리 창출에 기여할 것이란 찬성론과 오히려 병원을 영리화해 진료비 상승을 부추길 것이라는 반대론으로 나뉘어 뜨겁게 달아오르고 있다.\n\n정부는 지난 13일 제4차 투자활성화 대책에서 의료법인의 부대사업목적 자법인 설립 허용, 부대사업 확대 등을 통한 경영여건 개선, 해외진출 촉진, 연관산업과의 융복합 등의 내용을 담은 보건의료 서비스 방안을 발표했다.\n\n발표 이후 부대사업목적 자법인 설립을 허용하고 부대사업 범위를 확대한 것은 결국 의료민영화의 시작으로 국민들의 의료비 부담을 가중시킬 것이라는 목소리가 커지자 정부는 "의료민영화를 전혀 검토하고 있지 않으며, 자법인 설립은 현행 건강보험 체계에 어떠한 영향도 미치지 않으므로 의료비 상승도 발생하지 않는다. 현재 추진하고 있는 원격의료 등 보건의료분야 정책도 의료민영화와 전혀 무관하다"며 의료민영화와 상관없음을 거듭 강조했다.\n\n의료민영화에 반대하는 네티즌들은 “영리 목적 법인 병원들이 돈 되는 과목만 투자하고 돈 안 되고 위험한 수술은 거부할 게 뻔하다”라며 “결과적으로 진료비 부담이 늘어날 수 밖에 없다”고 주장했다.\n\n병원이 투자할 수 있는 자회사의 사업 영역을 건강보조식품, 온천, 화장품, 바이오 성과물 개발 등으로 확대하면, 약자인 환자들은 치료비를 지불하는 것에 더해 의사가 권하는 자회사의 제품을 쓰게 될 것으로 환자 부담이 늘 수 밖에 없다는 지적도 나왔다.\n\n건강검진 프로그램을 운영할 정도로 의료상업화가 만연한 상황에서 정부의 이번 대책은 "국민건강을 볼모로 병원들이 마음대로 돈을 벌어도 된다"는 정책적 시그널이라는 게 시민단체들의 우려다.\n\n이에 대한 정부의 입장은 고용을 늘리고 투자를 활성화시키겠다는 것이라는 점에 변함이 없다. 문형표 보건복지부 장관은 “의료법인의 자회사 설립 허가는 부대사업에 대한 규제를 완화해 주는 것으로 의료 민영화와는 관련이 없다”고 밝혔다.\n\n의료민영화 입법예고 소식을 접한 네티즌들은 "의료민영화 입법예고, 유병언 추정 사체 발견소식에 묻히지 않기를", "의료민영화 입법예고, 100만 서명 운동에 동참해주세요", "의료민영화 입법예고, 논점이 흐려지지 않기를" 등의 반응을 나타냈다.',
+              likes: 10,
+              comments: 0,
+              views: 81,
+              // create_at: "140722",
+              created_at: new Date("2014-07-22"),
+              press_name: "온라인뉴스팀",
+              thumbnail_url:
+                "https://img.etoday.co.kr/pto_db/2014/07/20140722183835_483608_600_399.jpg",
+              original_url: "https://www.etoday.co.kr/news/view/954654",
+            },
+            {
+              id: 8,
+              title: "국민 10명중 7명 의료영리화 반대",
+              description:
+                "우리 국민 10명 가운데 7명가량이 병원이 영리 자회사를 세워 수익사업을 하게 하는 등의 의료영리화 정책에 반대하는 것으로 조사됐다.\n김용익·이목희 새정치민주연합 의원실, 참여연대, 전국보건의료산업노동조합(보건의료노조) 등은 여론조사 전문기관인 한길리서치에 의뢰해 19~21일 전국 만 19살 이상 성인 남녀 1000명을 대상으로 박근혜 정부가 추진하는 의료영리화 정책에 대한 여론조사를 실시한 결과를 23일 발표했다. 이를 보면 의료 영리화 정책에 반대하는 비율이 69.7%로 나타났다. 찬성 응답은 23.1%였다. 나머지는 잘 모른다고 응답했다.\n3000구체적인 항목을 짚어보면, 의료법인 병원이 외부의 자본을 받아 자회사를 세운 뒤 수익사업을 할 수 있게 허용한 것에 대해서는 68.6%가 반대한다고 응답했다. 반대하는 주된 이유는 병원의 영리 추구가 심해지고 병원비가 오를 수 있기 때문이라고 응답했다. 반면 찬성의 이유는 병원의 경영을 개선하고 의료 서비스의 질을 높일 수 있다는 대답이었다.\n또 의료법인 병원이 수익사업을 할 수 있는 범위를 넓혀주는 문제에 대해서는 66.6%가 반대했다. 병원이 현재 허용돼 있는 장례식장이나 주차장 등의 사업에 더해 호텔, 목욕탕, 체육시설, 여행업, 건물임대업 등을 할 수 있게 하면 진료에 충실하기보다는 환자를 대상으로 수익사업에 더 열중하게 될까 우려한다는 것이다. 아울러 정부가 영리자회사와 부대사업 확대를 허용하는 안을 국회에서 법 개정 없이 추진하는 데 대해서는 응답자 가운데 74.1%가 반대하는 것으로 집계됐다.\n이번 조사 결과와 관련해 두 의원실과 보건의료노조 등은 박근혜 정부가 추진하는 의료영리화 정책이 국민의 여론에 반하는 것임이 드러났다며, 의료 영리화 정책은 그 어떤 설득력도 정당성도 없다고 비판했다. 이들은 박근혜 정부가 더는 국민여론을 호도하지 말고, 의료영리화 정책을 전면 폐기하라고 촉구했다.\n의료영리화 정책에 대한 반대운동도 갈수록 확산되고 있다. 시민사회단체 등을 중심으로 꾸려진 의료민영화 저지 범국민운동본부가 활동하고 있고, 새정치민주연합 등 야3당도 모두 의료영리화 저지 특별위원회를 꾸려 활동하고 있다. 특히 보건의료노조는 24일 서울역에서 4000여명의 조합원이 참가하는 의료영리화 반대 집회를 열고, 의료영리화 정책이 강행되면 다음달 22일 전면파업을 한다고 밝혔다.",
+              likes: 11,
+              comments: 1,
+              views: 38,
+              // create_at: "191019",
+              created_at: new Date("2019-10-19"),
+              press_name: "김양중",
+              thumbnail_url:
+                "https://www.hani.co.kr/_next/static/media/ico-logo-h.66d31368.png",
+              original_url:
+                "https://www.hani.co.kr/arti/society/health/643801.html",
+            },
+          ];
+        }
+        if (activeTab == "뉴진스") {
+          fetchedNews = [
+            {
+              id: 9,
+              title:
+                "\"뉴진스, 생떼 그만 부려\" 일방적 계약 해지에 뿔난 진짜 '노동자'들",
+              description:
+                "뉴진스 사태에 한국매니지먼트연합에 이어 한국연예제작자협회(이하 연제협)도 \"생떼 그만 쓰라\"면서 비판 성명을 냈다. 연제협은 저작권과 음반 사용에 대한 보상금 수령 등 연예인의 권리를 위해 앞장서는 곳이지만, 뉴진스의 '생떼'는 더 이상 참아주기 힘들었던 것으로 보인다.\n6일 사단법인 한국연예제작자협회는 이날 공식 성명을 내고 \"뉴진스는 하루빨리 생떼같은 무책임한 주장을 철회하고, 초심으로 돌아가 정상적인 활동을 이어가라\"고 촉구했다.\n\n한국연예제작자협회는 1992년 만들어진 사단법인으로, 주로 음반 사용 등 저작권에 관한 보상금의 공정한 수령과 분배를 꾀하는 단체다. 매니지먼트 전문기업 422개사가 가입돼 있다.\n\n앞서 성명을 냈던 한국매니지먼트연합, 한국연예매니지먼트협회와 함께 3대 연예기획자 단체로 꼽힌다. 엔터테인먼트 회사에서 월급을 받고 일하는 진짜 '노동자'인 셈이다. 앞서 뉴진스 하니는 타 레이블 매니저가 자신에게 \"무시해\"라고 발언했다면서 이를 국회에까지 끌고가 직장 내 괴롭힘을 호소했지만, 노동부가 '노동자가 아니다'고 판단했다.\n\n온갖 논란에 템퍼링 의혹까지 불고 있는 뉴진스가 당당하게 계약 해지 위약금도 내지 않고 전속계약을 마음대로 해지하면서 광고 수익 챙기고 그룹명도 가져가겠다고 발언한 데 대해 분노한 것으로 풀이된다.",
+              likes: 12,
+              comments: 3,
+              views: 582,
+              // create_at: "241206",
+              created_at: new Date("2024-12-06"),
+              press_name: "김소연 기자",
+              thumbnail_url:
+                "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1vmluL.img?w=612&h=347&m=6&x=210&y=83&s=362&d=69",
+              original_url:
+                "https://www.msn.com/ko-kr/news/national/%EB%89%B4%EC%A7%84%EC%8A%A4-%EC%83%9D%EB%96%BC-%EA%B7%B8%EB%A7%8C-%EB%B6%80%EB%A0%A4-%EC%9D%BC%EB%B0%A9%EC%A0%81-%EA%B3%84%EC%95%BD-%ED%95%B4%EC%A7%80%EC%97%90-%EB%BF%94%EB%82%9C-%EC%A7%84%EC%A7%9C-%EB%85%B8%EB%8F%99%EC%9E%90-%EB%93%A4/ar-AA1vmgCQ?ocid=BingNewsVerp",
+            },
+            {
+              id: 10,
+              title:
+                '뉴진스 "어도어 소송 제기 유감, 이미 투자금 초과 이익 돌려줬다"',
+              description:
+                '그룹 뉴진스가 어도어의 전속계약유효확인 소송 제기와 관련해 입장을 밝혔다.\n\n6일 뉴진스 멤버 민지, 하니, 다니엘, 해린, 혜인은 "어도어는 전속계약 위반이 없었다는 사실을 제대로 주장하지 못하고, 단지 회사의 지원과 투자가 있었으니 이를 회수할 때까지 전속계약 해지가 불가능하다는 주장을 반복하고 있다"고 지적했다.\n\n이들은 "이미 투자금을 초과하는 이익을 어도어와 하이브에 돌려줬다. 그럼에도 하이브는 저희의 가치를 하락시키기 위해 음해하고 역바이럴 하는 등 각종 방해를 시도했으며 어도어는 경영진이 바뀐 뒤 이를 방조했다"고 주장했다.\n\n이어 "저희를 보호해야 하는 회사에서 스스로 악플을 생산한 것이나 다름없는 일"이라며 "이러한 신뢰 관계의 파탄을 고려할 때 저희는 앞으로 더 많은 피해를 입게 될 가능성이 높다는 판단에 이르렀다"고 덧붙였다.\n\n뉴진스는 전속계약서상 \'어도어가 계약상의 의무를 이행하지 않을 경우, 계약을 해지할 수 있다\'는 조항이 기재되어 있다고 강조했다. 그러면서 "소속 아티스트를 보호할 의무조차 제대로 이행하지 못하며 수차례 계약 사항을 위반한 어도어와 하이브에 대한 신뢰는 이미 무너졌다. 전속계약서에 명시된 대로, 어도어와 하이브와 함께 일해야 할 이유는 더 이상 존재하지 않는다"고 했다.\n\n현 상황에서 어도어와의 동행을 5년 더 이어가라는 것은 비합리적이고 비인간적인 처사라고 단호한 태도를 보였다.\n\n뉴진스는 "어도어에 14일의 유예 기간을 주고 계약 위반 사항을 시정할 것을 요구했으나, 어도어는 이를 전혀 시정하지 못했다. 이에 따라 전속계약에 따라 어도어에 계약 해지를 통지하였고, 이는 즉시 효력이 발생했다"면서 "어도어는 이 해지가 적법한지 법원의 판단을 구하는 소송을 제기했지만, 이는 사후적으로 법원의 확인을 받기 위한 절차일 뿐"이라며 거듭 자기들은 어도어 소속이 아니라고 강조했다.\n\n뉴진스는 "다시 한번 분명히 말씀드리지만, 저희는 2024년 11월 29일부터 더 이상 어도어 소속이 아니다. 어도어는 저희의 활동에 간섭하거나 개입할 수 없다"고 말했다.\n\n최근 디스패치는 멤버 하니가 민희진 전 어도어 대표와 만나는 모습을 사진으로 찍어 보도하기도 했는데, 뉴진스는 "뒤에서 저희를 미행하고 음해하며 허위 사실을 유포한 매체의 기사를 접했을 때 저희는 공포와 혐오감을 느끼지 않을 수 없었다"고 했다.\n\n아울러 "아무리 이간질을 시도해도 저희 다섯 명은 한마음으로 뭉쳐 있으며 누구도 저희를 갈라놓을 수 없다"고 멤버 전원이 같은 뜻을 지녔음에는 변함이 없다고 알렸다.\n\n어도어와의 남은 스케줄을 소화하고 있다는 이들은 "스케줄을 도와주는 매니저님들과 퍼디(퍼포먼스 디렉터)님들께서 어도어와 하이브로부터 노트북을 빼앗기고 예고없이 들이닥쳐 조사를 받는 등 심각한 괴롭힘을 당해 울고 계시는 모습도 목격했다. 남은 스케줄을 진행하는 스태프분들에 대한 이런 행동이 저희는 너무 납득하기 어렵고 이런 비양심적이고 비인간적인 회사로 인해 피해를 입는 분들이 저희에서 끝나는게 아니라는게 괴롭다"고 했다.\n\n끝으로 "면피성 변명으로 일관하던 어도어가 되레 소송을 제기한 것에 대해 매우 유감스럽게 생각한다. 하지만 재판 과정을 통해 전속계약 해지를 선택할 수밖에 없었던 사정과 어도어의 계약 위반 사유가 낱낱이 밝혀지기를 기대한다"면서 "저희는 용기 있고 건강한 사람이 되고 싶다"고 말하며 지속적인 관심과 사랑을 당부했다.',
+              likes: 9,
+              comments: 1,
+              views: 241,
+              // create_at: "241206",
+              created_at: new Date("2024-12-06"),
+              press_name: "김수영 기자",
+              thumbnail_url:
+                "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1vn8qB.img?w=612&h=310&m=6&x=591&y=232&s=415&d=68",
+              original_url:
+                "https://www.msn.com/ko-kr/entertainment/music/%EB%89%B4%EC%A7%84%EC%8A%A4-%EC%96%B4%EB%8F%84%EC%96%B4-%EC%86%8C%EC%86%A1-%EC%A0%9C%EA%B8%B0-%EC%9C%A0%EA%B0%90-%EC%9D%B4%EB%AF%B8-%ED%88%AC%EC%9E%90%EA%B8%88-%EC%B4%88%EA%B3%BC-%EC%9D%B4%EC%9D%B5-%EB%8F%8C%EB%A0%A4%EC%A4%AC%EB%8B%A4/ar-AA1vmu8Q?ocid=BingNewsVerp",
+            },
+            {
+              id: 11,
+              title:
+                '연제협 "뉴진스, 전속계약 해지 통보 무책임… 생떼 같은 주장 철회하라" 지탄 [공식](전문)',
+              description:
+                '한국연예제작협회가 뉴진스의 전속 계약 해지와 관련 입장을 밝혔다.\n\n6일 한국연예제작협회(이하 ‘연제협’)측은 “최근 뉴진스와 소속사 간 불거진 전속계약 해지 논란은 대한민국 대중문화예술산업 전체에 깊은 충격을 주고 있다. 우리의 자부심이자 세계가 주목하는 문화자산인 K팝은 뉴진스 사태로 인해 그 뿌리부터 흔들리고 있다”며 “사단법인 한국연예제작자협회는 이를 더 이상 묵과할 수 없다는 마음으로 강력히 입장을 밝힌다”라고 전했다.\n\n한국연예제작협획 측은 전속계약에 대해 “상호 신뢰와 약속의 결실이다”라고 설명했다. 이어 “뉴진스는 계약해지의 절차를 어기고 기자회견을 열어 일방적인 전속계약 해지를 통보했다. 이는 책임 있는 계약의 당사자로서 매우 무책임한 행동이며 이는 법적 기준과 산업적 관행을 모두 무시한 것으로 강력히 비판받아 마땅하다”고 했다.\n또한, 연제협은 뉴진스가 ‘템퍼링’ 의혹에 연루되었다는 점에 대해 큰 우려를 낳는다고 목소리를 높였다. 연제협은 “현재 뉴진스는 전속계약 도중 소속사 내부 인력이 제3자와 적극적으로 결탁하여 계약해지를 유도했다는 의심을 받고 있다”며 “만약 이러한 의혹이 사실이라면 이는 단순한 계약 위반의 국면이 아니라 소속사와 아티스트가 오랜 기간 함께 쌓아온 협력 관계를 배반하는 행동이다”라고 주장했다.\n\n그러면서 "빠른 성공을 거둔 3년차 그룹 뉴진스의 일방적인 해지 선언은 대한민국 대중문화예술산업의 지속 가능성을 위협하는 매우 위험한 선례를 남길 수 있다"고 지적했다.\n\n연제협은 "뉴진스가 하루빨리 생떼 같은 무책임한 주장을 철회하고, 초심으로 돌아가 정상적인 활동을 이어가길 요청한다"며 "템퍼링 의혹과 같은 불법적 행위에 대해서는 철저한 진상 조사가 이루어지길 바란다"고 강조했다.\n\n앞서 지난달 28일 뉴진스는 서울 강남구 모처에서 긴급 기자회견을 열고, 어도어와의 전속 계약 해지를 선언했다. 그러면서 하이브와 어도어의 귀책 사유로 전속계약을 해지하기 때문에 이에 따른 위약금 배상 및 법적 소송은 없을 것이라고 주장했다.\n\n이후 5일 어도어 측은 지난 3일 서울중앙지법에 전속계약유효확인 소송을 제기했다고 밝혔다. 소속사 측은 이와 관련해 "아티스트와 회사 간의 건강한 신뢰 관계를 바탕으로 성장한 K팝 산업, 나아가 한국 대중문화 산업의 근간을 지키려는 판단을 법원에서 명백하게 구하고자 한다"며 “뉴진스와 함께하겠다는 입장은 지금도 변함이 없다. 전속계약의 효력에 관해 사법부의 판단을 구하는 것과 별개로 아티스트들과의 충분하고 진솔한 논의가 반드시 필요하다고 생각한다. 아티스트와 당사 간에 쌓인 불필요한 오해를 해소하고자 부단한 노력을 기울일 것이다"라고 입장을 밝혔다.\n\n이하 연제협 공식입장 전문.\n\n최근 뉴진스와 소속사 간 불거진 전속계약 해지 논란은 대한민국 대중문화예술산업 전체에 깊은 충격을 주고 있습니다. 우리의 자부심이자 세계가 주목하는 문화자산인 K팝은 뉴진스 사태로 인해 그 뿌리부터 흔들리고 있습니다. 사단법인 한국연예제작자협회는 이를 더 이상 묵과할 수 없다는 마음으로 강력히 입장을 밝힙니다.\n\n첫째, 전속계약은 단순한 계약이 아니라 상호 신뢰와 약속의 결실입니다. 일방적인 주장만으로 전속계약을 해지할 수 있다는 발상에 큰 우려를 표합니다. 계약 해지는 이를 주장하는 쪽에서 정당한 사유를 증명해야만 이루어질 수 있습니다. 그러나 뉴진스는 사유를 뒷받침할 구체적 증거를 제시하지 않았습니다. 심지어 소속사와 아티스트 사이에 체결한 계약사항을 벗어난 일부 무리한 시정 요구와 계약해지의 절차를 어기고 기자회견을 열어 일방적인 전속계약 해지를 통보한 것은, 책임 있는 계약의 당사자로서 매우 무책임한 행동이며, 이는 법적 기준과 산업적 관행을 모두 무시한 것으로, 강력히 비판받아 마땅합니다.\n\n둘째, 뉴진스가 전속계약 만료 전 아티스트를 유인하는 ‘템퍼링’ 의혹에 연루되었다는 점은 더 큰 우려를 낳습니다. 현재 뉴진스는 전속계약 도중 소속사 내부 인력이 제3자와 적극적으로 결탁하여 계약해지를 유도했다는 의심을 받고 있습니다. 만약 이러한 의혹이 사실이라면 이는 고도로 발전된, 신종 템퍼링에 해당할 소지가 있습니다. 템퍼링은 엔터테인먼트 산업의 신뢰를 송두리째 무너뜨리는 치명적인 행위입니다. 이는 단순한 계약 위반의 국면이 아니라, 소속사와 아티스트가 오랜 기간 함께 쌓아온 협력 관계를 배반하는 행동입니다. 뉴진스와 같은 유명 K팝 아티스트가 템퍼링에 연루됐다는 것이 사실이라면, 우리 대중문화산업 전체에 씻을 수 없는 상처가 될 것입니다.',
+              likes: 6,
+              comments: 1,
+              views: 236,
+              // create_at: "241206",
+              created_at: new Date("2024-12-06"),
+              press_name: "김현희 기자",
+              thumbnail_url:
+                "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1vlSbi.img?w=612&h=408&m=6&x=67&y=161&s=819&d=62",
+              original_url:
+                "https://www.msn.com/ko-kr/news/other/%EC%97%B0%EC%A0%9C%ED%98%91-%EB%89%B4%EC%A7%84%EC%8A%A4-%EC%A0%84%EC%86%8D%EA%B3%84%EC%95%BD-%ED%95%B4%EC%A7%80-%ED%86%B5%EB%B3%B4-%EB%AC%B4%EC%B1%85%EC%9E%84-%EC%83%9D%EB%96%BC-%EA%B0%99%EC%9D%80-%EC%A3%BC%EC%9E%A5-%EC%B2%A0%ED%9A%8C%ED%95%98%EB%9D%BC-%EC%A7%80%ED%83%84-%EA%B3%B5%EC%8B%9D-%EC%A0%84%EB%AC%B8/ar-AA1vlJFB?ocid=BingNewsVerp",
+            },
+            {
+              id: 12,
+              title:
+                '뉴진스 멤버들 "2주일내 민희진 대표 복귀 안되면 전속계약 해지"',
+              description:
+                "그룹 뉴진스가 13일 소속사 어도어에 민희진 전 대표의 복귀를 요구하며 “이를 받아들이지 않을 시 전속계약을 해지하겠다”는 취지의 내용증명을 보냈다.\n\n연합뉴스에 따르면, 뉴진스는 이날 김민지, 하니 팜, 마쉬 다니엘, 강해린, 이혜인 등 멤버 다섯명의 본명으로 어도어에 내용증명을 보내 이 같이 요구했다. 이 문서에는 “예전처럼 어도어의 경영과 뉴진스의 프로듀싱을 민 전 대표가 담당하도록 해 달라”며 “뉴진스가 전속계약을 체결한 후 2024년 3월까지 즐겁고 행복하게 활동했던 그때의 어도어로 돌려놓으라. 민 전 대표와 함께 앞으로 보여줄 음악과 무대, 새롭고 창의적인 활동들로 꿈에 부풀어 있던 뉴진스가 그립다”는 내용이 담긴 것으로 알려졌다.\n\n뉴진스는 또 “하이브가 ‘뉴(뉴진스를 지칭) 버리고 새로 판 짜면 될 일’이라는 결정을 한 데 대해 뉴진스의 매니지먼트사로서 필요한 모든 조치를 하라”고 요구했다. 이는 하이브 내부 문건인 ‘음악 산업 리포트’에 담겨 있던 내용을 지적한 것이다. 그러면서 “‘뉴진스를 버리라’고 결정하고 지시한 인물이 누구인지 확인하고, 그 과정에서 발견된 위법행위에 대해 민·형사상 조치를 해달라”고 했다.\n\n뉴진스는 이외에도 ▲하니에게 ‘무시해’라고 발언한 매니저의 공식적인 사과 ▲동의 없이 노출돼 사용된 동영상과 사진 등 자료 삭제 ▲’음반 밀어내기’로 뉴진스가 받은 피해 파악과 해결책 마련 ▲돌고래유괴단 신우석 감독과의 분쟁과 이로 인한 기존 작업물이 사라지는 문제 해결 ▲뉴진스의 고유한 색깔과 작업물을 지킬 것 등을 요구했다.\n뉴진스는 내용증명에서 “이 서신을 받은 날로부터 14일(2주일) 이내에 말씀드리는 전속계약의 중대한 위반사항을 모두 시정하라”고 했다. 이어 “어도어가 시정요구를 받아들이지 않는다면 전속계약을 해지할 예정”이라며 “현재 뉴진스 멤버들의 가족, 친지와 관련된 근거 없는 소문이 떠돌고 있는데, 뉴진스는 이러한 소문과 아무런 관련이 없다”고 했다. 또한 “거짓 소문을 퍼뜨려 뉴진스를 음해하는 자들이 있다면 단호히 대응하겠다”고 했다. 멤버 다섯 명은 이 내용증명의 마지막 장에 직접 서명한 것으로 알려졌다.\n\n이에 따라 하이브가 지난 4월 민희진 전 어도어 대표에 대한 감사에 착수하며 촉발된 ‘어도어 사태’는 전속계약 분쟁으로 이어질 가능성이 커지게 됐다.\n\n앞서 뉴진스 멤버들은 지난 9월 민 전 대표를 복귀시켜달라고 요구했으나 어도어는 받아들이지 않았다. 지난달 서울중앙지방법원은 민 전 대표가 하이브를 상대로 낸 어도어 대표이사 선임 가처분 신청에 대해 각하 결정을 내렸다.",
+              likes: 19,
+              comments: 4,
+              views: 1032,
+              // create_at: "241113",
+              created_at: new Date("2024-11-13"),
+              press_name: "최혜승 기자",
+              thumbnail_url:
+                "https://www.chosun.com/resizer/v2/VWUEYXMWQ3SDZ654IQEXTYK6LY.jpg?auth=3e5ef4d3fc6174892cb156eaf3211f5760226694af78007a394c598fdd27ad46&width=616",
+              original_url:
+                "https://www.chosun.com/culture-life/culture_general/2024/11/13/KMTCRMYVRRDAPFVJIEJ3PBGRLY/",
+            },
+          ];
+        }
+
+        setNews(fetchedNews);
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      } finally {
+        setNewsLoading(false);
+      }
+    };
+
+    getNews();
+  }, [activeTab]);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -93,7 +289,7 @@ export default function Home() {
           />
           <div className="grid grid-rows-1 gap-4 md:grid-rows-2 lg:grid-rows-3">
             {news.map((news) => {
-              const formattedDate = formatDate(news.createdAt.toString());
+              const formattedDate = formatDate(news.created_at.toString());
               return (
                 <NewsCard
                   key={news.id}
@@ -108,10 +304,10 @@ export default function Home() {
         {/* Vertical Divider */}
         <div className="border-l border-gray-300 min-h-screen"></div>
 
-        {/* Right Section: flex-1 */}
+        {/* Right Section: flex-1
         <div className="flex-1 p-4">
-          <p>This is the right section for additional content.</p>
-        </div>
+          <p>This is the right section for additional description.</p>
+        </div> */}
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ def load_db(file_path):
     return pd.read_csv(file_path)
 
 # 2. Function to calculate bias for the input news article using RAG-like approach
-def calculate_article_bias(news_article, db, model_name="multi-qa-MiniLM-L6-cos-v1", threshold=0.6):
+def calculate_article_bias(news_article, db, model_name="multi-qa-MiniLM-L6-cos-v1", threshold=0.5):
     model = SentenceTransformer(model_name)
 
     # Encode the input news article
